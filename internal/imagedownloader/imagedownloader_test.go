@@ -56,7 +56,7 @@ func TestImageDownloader_DownloadAllImages(t *testing.T) {
 		// mock functions
 		mockDownloaderClient.EXPECT().DownloadImage(gomock.Any(), gomock.Any(), gomock.Any()).Return(imagedownloader.ErrSkippedContentType)
 		mockDownloaderClient.EXPECT().DownloadImage(gomock.Any(), gomock.Any(), gomock.Any()).Return(imagedownloader.ErrImageNotFound)
-		mockDownloaderClient.EXPECT().DownloadImage(gomock.Any(), gomock.Any(), gomock.Any()).Return(imagedownloader.ErrInvalidImage)
+		mockDownloaderClient.EXPECT().DownloadImage(gomock.Any(), gomock.Any(), gomock.Any()).Return(imagedownloader.ErrFailedImage)
 		mockDownloaderClient.EXPECT().DownloadImage(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 
 		out, err := imageDownloader.DownloadAllImages(ctx)

@@ -13,24 +13,18 @@ const (
 )
 
 var (
-	ErrMakeRequest        = errors.New("could not build http request")
-	ErrFetchResponse      = errors.New("could not fetch http response")
-	ErrImageNotFound      = errors.New("could not download a non-existing image")
-	ErrInvalidImage       = errors.New("could not download an invalid image")
-	ErrOpenImageFile      = errors.New("could not create a new image file")
-	ErrCopyImage          = errors.New("could not copy image into the destination path")
-	ErrSkippedContentType = errors.New("skip image due to not listed in accepted content type")
+	ErrMakeRequest   = errors.New("could not build http request")
+	ErrFetchResponse = errors.New("could not fetch http response")
+	ErrImageNotFound = errors.New("could not download a non-existing image")
+	ErrFailedImage   = errors.New("could not download an invalid image")
+	ErrOpenImageFile = errors.New("could not create a new image file")
+	ErrCopyImage     = errors.New("could not copy image into the destination path")
 )
 
-type httpClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-
 type Client struct {
-	HTTPClient                         httpClient
-	CreateFileFn                       func(name string) (*os.File, error)
-	CopyFileFn                         func(dst io.Writer, src io.Reader) (written int64, err error)
-	AcceptedImageContentTypeExtensions map[string]string
+	HTTPClient   httpClient
+	CreateFileFn func(name string) (*os.File, error)
+	CopyFileFn   func(dst io.Writer, src io.Reader) (written int64, err error)
 }
 
 func (c *Client) DownloadImage(ctx context.Context, url string, destinationPath func(contentType string) string) error {
@@ -48,16 +42,12 @@ func (c *Client) DownloadImage(ctx context.Context, url string, destinationPath 
 	defer resp.Body.Close()
 	contentType := resp.Header.Get(contentTypeHeaderKey)
 
-	if _, ok := c.AcceptedImageContentTypeExtensions[contentType]; !ok {
-		return ErrSkippedContentType
-	}
-
 	if resp.StatusCode == http.StatusNotFound {
 		return ErrImageNotFound
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return ErrInvalidImage
+		return ErrFailedImage
 	}
 
 	return c.saveImage(resp.Body, destinationPath(contentType))

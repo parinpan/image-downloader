@@ -20,10 +20,6 @@ func TestClient_DownloadImage(t *testing.T) {
 		return "absolute/path/to/image"
 	}
 
-	acceptedContentTypes := map[string]string{
-		"image/jpeg": ".jpg",
-	}
-
 	t.Run("returns error on an invalid request", func(t *testing.T) {
 		client := &Client{}
 		err := client.DownloadImage(ctx, ":) !some_invalid_url! :)", nil)
@@ -44,48 +40,17 @@ func TestClient_DownloadImage(t *testing.T) {
 		assert.ErrorIs(t, err, ErrFetchResponse)
 	})
 
-	t.Run("returns error when content-type skipped", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		mockHttp := NewMockhttpClient(ctrl)
-
-		client := Client{
-			HTTPClient:                         mockHttp,
-			AcceptedImageContentTypeExtensions: acceptedContentTypes,
-		}
-
-		// mock http response
-		mockHttp.EXPECT().Do(gomock.Any()).Return(&http.Response{
-			StatusCode: http.StatusOK,
-			Header: map[string][]string{
-				"Content-Type": {"something/else"},
-			},
-			Body: io.NopCloser(bytes.NewBuffer(nil)),
-		}, nil)
-
-		err := client.DownloadImage(ctx, "https://fachr.in/static/image/fachrin-memoji.jpg", destinationPath)
-		assert.ErrorIs(t, err, ErrSkippedContentType)
-	})
-
 	t.Run("returns error on 404 http status code", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
 		mockHttp := NewMockhttpClient(ctrl)
-
-		client := Client{
-			HTTPClient:                         mockHttp,
-			AcceptedImageContentTypeExtensions: acceptedContentTypes,
-		}
+		client := Client{HTTPClient: mockHttp}
 
 		// mock http response
 		mockHttp.EXPECT().Do(gomock.Any()).Return(&http.Response{
 			StatusCode: http.StatusNotFound,
-			Header: map[string][]string{
-				"Content-Type": {"image/jpeg"},
-			},
-			Body: io.NopCloser(bytes.NewBuffer(nil)),
+			Body:       io.NopCloser(bytes.NewBuffer(nil)),
 		}, nil)
 
 		err := client.DownloadImage(ctx, "https://fachr.in/static/image/fachrin-memoji.jpg", nil)
@@ -97,23 +62,16 @@ func TestClient_DownloadImage(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockHttp := NewMockhttpClient(ctrl)
-
-		client := Client{
-			HTTPClient:                         mockHttp,
-			AcceptedImageContentTypeExtensions: acceptedContentTypes,
-		}
+		client := Client{HTTPClient: mockHttp}
 
 		// mock http response
 		mockHttp.EXPECT().Do(gomock.Any()).Return(&http.Response{
 			StatusCode: http.StatusInternalServerError,
-			Header: map[string][]string{
-				"Content-Type": {"image/jpeg"},
-			},
-			Body: io.NopCloser(bytes.NewBuffer(nil)),
+			Body:       io.NopCloser(bytes.NewBuffer(nil)),
 		}, nil)
 
 		err := client.DownloadImage(ctx, "https://fachr.in/static/image/fachrin-memoji.jpg", nil)
-		assert.ErrorIs(t, err, ErrInvalidImage)
+		assert.ErrorIs(t, err, ErrFailedImage)
 	})
 
 	t.Run("returns error when couldn't create file to store image", func(t *testing.T) {
@@ -123,8 +81,7 @@ func TestClient_DownloadImage(t *testing.T) {
 		mockHttp := NewMockhttpClient(ctrl)
 
 		client := Client{
-			HTTPClient:                         mockHttp,
-			AcceptedImageContentTypeExtensions: acceptedContentTypes,
+			HTTPClient: mockHttp,
 			CreateFileFn: func(name string) (*os.File, error) {
 				return nil, errors.New("error")
 			},
@@ -133,10 +90,7 @@ func TestClient_DownloadImage(t *testing.T) {
 		// mock http response
 		mockHttp.EXPECT().Do(gomock.Any()).Return(&http.Response{
 			StatusCode: http.StatusOK,
-			Header: map[string][]string{
-				"Content-Type": {"image/jpeg"},
-			},
-			Body: io.NopCloser(bytes.NewBuffer(nil)),
+			Body:       io.NopCloser(bytes.NewBuffer(nil)),
 		}, nil)
 
 		err := client.DownloadImage(ctx, "https://fachr.in/static/image/fachrin-memoji.jpg", destinationPath)
@@ -150,8 +104,7 @@ func TestClient_DownloadImage(t *testing.T) {
 		mockHttp := NewMockhttpClient(ctrl)
 
 		client := Client{
-			HTTPClient:                         mockHttp,
-			AcceptedImageContentTypeExtensions: acceptedContentTypes,
+			HTTPClient: mockHttp,
 			CreateFileFn: func(name string) (*os.File, error) {
 				return &os.File{}, nil
 			},
@@ -163,10 +116,7 @@ func TestClient_DownloadImage(t *testing.T) {
 		// mock http response
 		mockHttp.EXPECT().Do(gomock.Any()).Return(&http.Response{
 			StatusCode: http.StatusOK,
-			Header: map[string][]string{
-				"Content-Type": {"image/jpeg"},
-			},
-			Body: io.NopCloser(bytes.NewBuffer(nil)),
+			Body:       io.NopCloser(bytes.NewBuffer(nil)),
 		}, nil)
 
 		err := client.DownloadImage(ctx, "https://fachr.in/static/image/fachrin-memoji.jpg", destinationPath)
@@ -180,8 +130,7 @@ func TestClient_DownloadImage(t *testing.T) {
 		mockHttp := NewMockhttpClient(ctrl)
 
 		client := Client{
-			HTTPClient:                         mockHttp,
-			AcceptedImageContentTypeExtensions: acceptedContentTypes,
+			HTTPClient: mockHttp,
 			CreateFileFn: func(name string) (*os.File, error) {
 				return &os.File{}, nil
 			},
@@ -193,10 +142,7 @@ func TestClient_DownloadImage(t *testing.T) {
 		// mock http response
 		mockHttp.EXPECT().Do(gomock.Any()).Return(&http.Response{
 			StatusCode: http.StatusOK,
-			Header: map[string][]string{
-				"Content-Type": {"image/jpeg"},
-			},
-			Body: io.NopCloser(bytes.NewBuffer(nil)),
+			Body:       io.NopCloser(bytes.NewBuffer(nil)),
 		}, nil)
 
 		err := client.DownloadImage(ctx, "https://fachr.in/static/image/fachrin-memoji.jpg", destinationPath)

@@ -1,5 +1,13 @@
 package imagedownloader
 
+import (
+	"net/http"
+)
+
+type httpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 var (
 	CommonImageContentTypeExtensions = map[string]string{
 		"image/jpeg":         ".jpg",
