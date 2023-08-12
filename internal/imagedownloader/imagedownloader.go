@@ -60,7 +60,10 @@ func (i *ImageDownloader) downloadImages(ctx context.Context, urls []string) Out
 
 	for _, url := range urls {
 		if _, err := uri.ParseRequestURI(url); err != nil {
-			out.InvalidImages = append(out.InvalidImages, url)
+			out.InvalidImages = append(out.InvalidImages, ImageInfo{
+				Url:   url,
+				Error: "image url is invalid",
+			})
 			continue
 		}
 
@@ -70,15 +73,23 @@ func (i *ImageDownloader) downloadImages(ctx context.Context, urls []string) Out
 			defer wg.Done()
 			err := i.DownloaderClient.DownloadImage(ctx, url, i.destinationPath(url))
 
+			imageInfo := ImageInfo{
+				Url: url,
+			}
+
+			if err != nil {
+				imageInfo.Error = err.Error()
+			}
+
 			switch err {
 			case nil:
-				out.DownloadedImages = append(out.DownloadedImages, url)
+				out.DownloadedImages = append(out.DownloadedImages, imageInfo)
 			case imagedownloader.ErrImageNotFound:
-				out.NotFoundImages = append(out.NotFoundImages, url)
+				out.NotFoundImages = append(out.NotFoundImages, imageInfo)
 			case imagedownloader.ErrSkippedContentType:
-				out.SkippedImages = append(out.SkippedImages, url)
+				out.SkippedImages = append(out.SkippedImages, imageInfo)
 			default:
-				out.FailedImages = append(out.FailedImages, url)
+				out.FailedImages = append(out.FailedImages, imageInfo)
 			}
 		}(url)
 	}
