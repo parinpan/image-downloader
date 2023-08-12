@@ -13,12 +13,13 @@ const (
 )
 
 var (
-	ErrMakeRequest   = errors.New("could not build http request")
-	ErrFetchResponse = errors.New("could not fetch http response")
-	ErrImageNotFound = errors.New("could not download a non-existing image")
-	ErrInvalidImage  = errors.New("could not download an invalid image")
-	ErrOpenImageFile = errors.New("could not create a new image file")
-	ErrCopyImage     = errors.New("could not copy image into the destination path")
+	ErrMakeRequest        = errors.New("could not build http request")
+	ErrFetchResponse      = errors.New("could not fetch http response")
+	ErrImageNotFound      = errors.New("could not download a non-existing image")
+	ErrInvalidImage       = errors.New("could not download an invalid image")
+	ErrOpenImageFile      = errors.New("could not create a new image file")
+	ErrCopyImage          = errors.New("could not copy image into the destination path")
+	ErrSkippedContentType = errors.New("skip image due to not listed in accepted content type")
 )
 
 type httpClient interface {
@@ -26,9 +27,10 @@ type httpClient interface {
 }
 
 type Client struct {
-	HTTPClient   httpClient
-	CreateFileFn func(name string) (*os.File, error)
-	CopyFileFn   func(dst io.Writer, src io.Reader) (written int64, err error)
+	HTTPClient                         httpClient
+	CreateFileFn                       func(name string) (*os.File, error)
+	CopyFileFn                         func(dst io.Writer, src io.Reader) (written int64, err error)
+	AcceptedImageContentTypeExtensions map[string]string
 }
 
 func (c *Client) DownloadImage(ctx context.Context, url string, destinationPath func(contentType string) string) error {
@@ -44,6 +46,11 @@ func (c *Client) DownloadImage(ctx context.Context, url string, destinationPath 
 
 	// close body in every call made
 	defer resp.Body.Close()
+	contentType := resp.Header.Get(contentTypeHeaderKey)
+
+	if _, ok := c.AcceptedImageContentTypeExtensions[contentType]; !ok {
+		return ErrSkippedContentType
+	}
 
 	if resp.StatusCode == http.StatusNotFound {
 		return ErrImageNotFound
@@ -53,7 +60,7 @@ func (c *Client) DownloadImage(ctx context.Context, url string, destinationPath 
 		return ErrInvalidImage
 	}
 
-	return c.saveImage(resp.Body, destinationPath(resp.Header.Get(contentTypeHeaderKey)))
+	return c.saveImage(resp.Body, destinationPath(contentType))
 }
 
 func (c *Client) saveImage(body io.ReadCloser, destinationPath string) error {
