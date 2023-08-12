@@ -15,6 +15,10 @@ import (
 	imageDownloaderPkg "fachr.in/image-downloader/pkg/imagedownloader"
 )
 
+const (
+	unlimited = 0
+)
+
 func StartImageDownloaderApp(ctx context.Context) error {
 	imageDownloader := &imagedownloader.ImageDownloader{
 		FixtureLoader: &fixture.Fixture{
@@ -23,7 +27,15 @@ func StartImageDownloaderApp(ctx context.Context) error {
 		},
 		DownloaderClient: &imageDownloaderPkg.Client{
 			HTTPClient: &imageDownloaderPkg.HTTPClient{
-				BaseClient: http.DefaultClient,
+				BaseClient: &http.Client{
+					Transport: &http.Transport{
+						MaxIdleConns:        250,
+						MaxIdleConnsPerHost: 25,
+						MaxConnsPerHost:     unlimited,
+						IdleConnTimeout:     unlimited,
+					},
+					Timeout: time.Duration(60) * time.Second,
+				},
 				RetryOption: imageDownloaderPkg.RetryOption{
 					BaseDelay:   time.Duration(50) * time.Millisecond,
 					MaxDelay:    time.Duration(3) * time.Second,
