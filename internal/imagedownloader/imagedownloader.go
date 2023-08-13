@@ -105,10 +105,8 @@ func (i *ImageDownloader) downloadImages(ctx context.Context, urls []string) Out
 
 func (i *ImageDownloader) worker(ctx context.Context, id int, jobs chan []string, result chan Output) {
 	for urls := range jobs {
-		if len(urls) > 0 {
-			logger.Infof("worker: %d - downloading images from %v", id, urls)
-			result <- i.downloadImages(ctx, urls)
-		}
+		logger.Infof("worker: %d - downloading images from %v", id, urls)
+		result <- i.downloadImages(ctx, urls)
 	}
 }
 

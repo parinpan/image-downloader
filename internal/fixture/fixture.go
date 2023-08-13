@@ -33,6 +33,10 @@ func (f *Fixture) LoadExecute(_ context.Context, batchExecutor func(urls []strin
 		}
 	}
 
+	if len(urls) == 0 {
+		return nil
+	}
+
 	// execute remaining urls
 	if err := batchExecutor(urls); err != nil {
 		return err
