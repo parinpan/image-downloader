@@ -8,3 +8,8 @@ http://www.imfdb.org/images/1/1a/X26_Taser_yellow.jpg
 http://www.imfdb.org/images/4/48/X26_with_XDPM.jpg
 http://www.imfdb.org/images/1/1b/X3_Coyote.jpeg
 http://www.imfdb.org/images/1/16/XCR_CQB.jpg
+https://cdn.pixabay.com/photo/2017/02/09/21/08/wings-2053515_640.png
+https://download.havecamerawilltravel.com/sample-images/webp/webp-example.webp
+https://user-images.githubusercontent.com/14011726/94132137-7d4fc100-fe7c-11ea-8512-69f90cb65e48.gif
+https://filesamples.com/samples/image/bmp/sample_640%C3%97426.bmp
+https://abs.twimg.com/favicons/twitter.3.ico
