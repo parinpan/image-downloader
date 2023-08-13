@@ -25,9 +25,14 @@ func (f *Fixture) LoadExecute(_ context.Context, batchExecutor func(urls []strin
 		urls = append(urls, scanner.Text())
 
 		if len(urls) == cap(urls) {
-			if err := batchExecutor(urls); err != nil {
+			// batchExecutor might run in a go routine; so copy url values to make it thread safe
+			var safeUrls = make([]string, len(urls))
+			copy(safeUrls, urls)
+
+			if err := batchExecutor(safeUrls); err != nil {
 				return err
 			}
+
 			// clear urls after processed
 			urls = urls[:0]
 		}
