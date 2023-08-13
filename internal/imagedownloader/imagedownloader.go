@@ -108,7 +108,7 @@ func (i *ImageDownloader) worker(ctx context.Context, jobs chan []string, result
 
 func (i *ImageDownloader) destinationPath(url string) func(string) string {
 	u, _ := uri.Parse(url)
-	fileName := fmt.Sprintf("%s_%s", i.UlidMakerFn(), path.Base(u.Path))
+	fileName := fmt.Sprintf("%s_%s", i.UlidMakerFn().String(), path.Base(u.Path))
 	fileNameWithoutExt := strings.TrimSuffix(fileName, path.Ext(fileName))
 
 	return func(contentType string) string {
