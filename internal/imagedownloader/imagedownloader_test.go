@@ -78,9 +78,9 @@ func TestImageDownloader_destinationPath(t *testing.T) {
 			CommonImageContentTypeExtensions: imagedownloader.CommonImageContentTypeExtensions,
 		}
 
-		assert.Equal(t, "/downloads/00000000000000000000000000_a.jpg", imageDownloader.destinationPath("https://a.com/a")("image/jpeg"))
-		assert.Equal(t, "/downloads/00000000000000000000000000_a.jpg", imageDownloader.destinationPath("https://a.com/a.jpeg")("image/jpeg"))
-		assert.Equal(t, "/downloads/00000000000000000000000000_%2F.jpg", imageDownloader.destinationPath("https://a.com/")("image/jpeg"))
-		assert.Equal(t, "/downloads/00000000000000000000000000_.jpg", imageDownloader.destinationPath("https://a.com")("image/jpeg"))
+		assert.Equal(t, "/downloads/a_00000000000000000000000000.jpg", imageDownloader.destinationPath("https://a.com/a")("image/jpeg"))
+		assert.Equal(t, "/downloads/a_00000000000000000000000000.jpg", imageDownloader.destinationPath("https://a.com/a.jpeg")("image/jpeg"))
+		assert.Equal(t, "/downloads/%2F_00000000000000000000000000.jpg", imageDownloader.destinationPath("https://a.com/")("image/jpeg"))
+		assert.Equal(t, "/downloads/_00000000000000000000000000.jpg", imageDownloader.destinationPath("https://a.com")("image/jpeg"))
 	})
 }
