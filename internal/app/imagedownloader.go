@@ -22,7 +22,7 @@ const (
 func StartImageDownloaderApp(ctx context.Context) error {
 	imageDownloader := &imagedownloader.ImageDownloader{
 		FixtureLoader: &fixture.Fixture{
-			Path:      "fixtures/images.txt",
+			Path:      "/fixtures/images.txt",
 			BatchSize: 25,
 		},
 		DownloaderClient: &imageDownloaderPkg.Client{
@@ -48,7 +48,7 @@ func StartImageDownloaderApp(ctx context.Context) error {
 		},
 		UlidMakerFn:                      ulid.Make,
 		Workers:                          10,
-		StorageRootPath:                  "downloads/",
+		StorageRootPath:                  "/downloads",
 		CommonImageContentTypeExtensions: imageDownloaderPkg.CommonImageContentTypeExtensions,
 	}
 
