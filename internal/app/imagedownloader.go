@@ -26,7 +26,7 @@ func StartImageDownloaderApp(ctx context.Context) error {
 	imageDownloader := &imagedownloader.ImageDownloader{
 		FixtureLoader: &fixture.Fixture{
 			Path:      "/fixtures/images.txt",
-			BatchSize: 1,
+			BatchSize: 25,
 		},
 		DownloaderClient: &imageDownloaderPkg.Client{
 			HTTPClient: &imageDownloaderPkg.HTTPClient{
