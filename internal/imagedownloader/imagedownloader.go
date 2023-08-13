@@ -82,6 +82,8 @@ func (i *ImageDownloader) downloadImages(ctx context.Context, urls []string) Out
 		wg.Add(1)
 
 		go func(url string) {
+			logger.Infof("downloading an image from url: %v", url)
+
 			defer wg.Done()
 			err := i.DownloaderClient.DownloadImage(ctx, url, i.destinationPath(url))
 

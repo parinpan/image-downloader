@@ -2,7 +2,7 @@ package imagedownloader
 
 type ImageInfo struct {
 	Url   string `json:"url"`
-	Error string `json:"error"`
+	Error string `json:"error,omitempty"`
 }
 
 type Output struct {
