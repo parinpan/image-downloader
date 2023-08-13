@@ -40,16 +40,15 @@ func (h *HTTPClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 func (h *HTTPClient) do(req *http.Request, retryCount int) (*http.Response, error) {
-	baseDelay := float64(h.RetryOption.BaseDelay) / float64(time.Millisecond)
-	delay := rand.Float64() * (math.Pow(2.0, float64(retryCount)) * baseDelay)
-	delayDuration := time.Duration(delay) * time.Millisecond
+	delay := rand.Float64() * math.Pow(2.0, float64(retryCount)) * float64(h.RetryOption.BaseDelay)
+	delayDuration := time.Duration(delay)
 
 	if retryCount != 0 {
 		time.Sleep(delayDuration)
 	}
 
 	resp, err := h.BaseClient.Do(req)
-	retryable := err != nil && delayDuration < h.RetryOption.MaxDelay && retryCount+1 <= h.RetryOption.MaxAttempts
+	retryable := err != nil && delayDuration <= h.RetryOption.MaxDelay && retryCount+1 <= h.RetryOption.MaxAttempts
 
 	if retryable {
 		return h.do(req, retryCount+1)
