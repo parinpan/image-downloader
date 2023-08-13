@@ -13,6 +13,7 @@ import (
 	"fachr.in/image-downloader/internal/imagedownloader"
 	"fachr.in/image-downloader/internal/util"
 	imageDownloaderPkg "fachr.in/image-downloader/pkg/imagedownloader"
+	"fachr.in/image-downloader/pkg/logger"
 )
 
 const (
@@ -20,10 +21,12 @@ const (
 )
 
 func StartImageDownloaderApp(ctx context.Context) error {
+	logger.Init()
+
 	imageDownloader := &imagedownloader.ImageDownloader{
 		FixtureLoader: &fixture.Fixture{
 			Path:      "/fixtures/images.txt",
-			BatchSize: 25,
+			BatchSize: 1,
 		},
 		DownloaderClient: &imageDownloaderPkg.Client{
 			HTTPClient: &imageDownloaderPkg.HTTPClient{

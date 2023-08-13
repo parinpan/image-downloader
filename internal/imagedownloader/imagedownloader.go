@@ -11,6 +11,7 @@ import (
 	"github.com/oklog/ulid/v2"
 
 	"fachr.in/image-downloader/pkg/imagedownloader"
+	"fachr.in/image-downloader/pkg/logger"
 )
 
 type downloaderClient interface {
@@ -36,7 +37,7 @@ func (i *ImageDownloader) DownloadAllImages(ctx context.Context) (*Output, error
 
 	// spawn workers
 	for worker := 0; worker < i.Workers; worker++ {
-		go i.worker(ctx, jobs, result)
+		go i.worker(ctx, worker, jobs, result)
 	}
 
 	enqueueJobs := func(urls []string) error {
@@ -79,10 +80,12 @@ func (i *ImageDownloader) downloadImages(ctx context.Context, urls []string) Out
 
 			if err != nil {
 				imageInfo.Error = err.Error()
+				logger.Errorf("could not download image, imageInfo: %v", imageInfo)
 			}
 
 			switch err {
 			case nil:
+				logger.Infof("image downloaded: %v", imageInfo)
 				out.DownloadedImages = append(out.DownloadedImages, imageInfo)
 			case imagedownloader.ErrImageNotFound:
 				out.NotFoundImages = append(out.NotFoundImages, imageInfo)
@@ -100,9 +103,12 @@ func (i *ImageDownloader) downloadImages(ctx context.Context, urls []string) Out
 	return out
 }
 
-func (i *ImageDownloader) worker(ctx context.Context, jobs chan []string, result chan Output) {
+func (i *ImageDownloader) worker(ctx context.Context, id int, jobs chan []string, result chan Output) {
 	for urls := range jobs {
-		result <- i.downloadImages(ctx, urls)
+		if len(urls) > 0 {
+			logger.Infof("worker: %d - downloading images from %v", id, urls)
+			result <- i.downloadImages(ctx, urls)
+		}
 	}
 }
 
