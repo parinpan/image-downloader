@@ -38,14 +38,20 @@ make test
 
 Before proceeding, make sure you have Docker installed on your machine. If you're using an Apple Silicon machine, you can run Docker using Colima. Refer to this guide for installation and usage instructions: [Colima GitHub](https://github.com/abiosoft/colima)
 
+### Building the app
+Before running the app. Please build it first. Execute this command in the terminal:
+```bash
+make build
+```
+
 ### Running with Default Input Fixture
 To run the app with the default input fixture, follow these steps in your terminal. Make sure that the image store directory exists and is writable:
-```
+```bash
 IMAGE_STORE_PATH=/absolute/path/to/store/your/image/directory make run
 ```
 
 ### Running with Custom Input Fixture
 To run the app with a custom input fixture, follow these steps in your terminal. Ensure that the input file exists and is in the same format as the default fixture (check **fixtures/images.txt** in this repository). Confirm that the image store directory exists and is writable:
-```
+```bash
 INPUT_FIXTURE=/absolute/path/to/your/input/images.txt IMAGE_STORE_PATH=/absolute/path/to/store/your/image/directory make run
 ```
