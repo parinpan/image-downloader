@@ -50,9 +50,5 @@ func (f *Fixture) LoadExecute(_ context.Context, batchExecutor func(urls []strin
 	}
 
 	// execute remaining urls
-	if err := batchExecutor(urls); err != nil {
-		return err
-	}
-
-	return nil
+	return batchExecutor(urls)
 }
