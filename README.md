@@ -1,5 +1,6 @@
 # High-Level Design
-![imagedownloader](https://github.com/parinpan/image-downloader/assets/14908455/a8e8fb3f-351d-423e-aae7-06a488bae5c4)
+![imagedownloader](https://github.com/parinpan/image-downloader/assets/14908455/7ef1ad2f-a8db-480b-b697-d04d301c62e8)
+
 
 ## Description
 1. The ImageDownloaderApp initiates and triggers the ImageDownloaderService.
